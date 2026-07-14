@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ff6b8a" />
+  <title>Will You Be Mine?</title>
+  <style>
+    :root {
+      --pink: #ff5f82;
+      --pink-dark: #e94068;
+      --cream: #fff7f8;
+      --text: #402631;
+      --shadow: 0 20px 60px rgba(123, 35, 66, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family:
+        Inter, Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.95) 0 8%, transparent 28%),
+        radial-gradient(circle at 85% 85%, rgba(255, 206, 218, 0.85) 0 10%, transparent 32%),
+        linear-gradient(135deg, #ffdce5, #fff8fa 48%, #ffc8d7);
+    }
+
+    .background-hearts,
+    .celebration {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .background-heart {
+      position: absolute;
+      opacity: 0.18;
+      animation: float 8s ease-in-out infinite;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-8deg); }
+      50% { transform: translateY(-24px) rotate(8deg); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 620px);
+      min-height: 420px;
+      padding: 52px 32px 40px;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      text-align: center;
+    }
+
+    .emoji {
+      display: inline-grid;
+      place-items: center;
+      width: 88px;
+      height: 88px;
+      margin-bottom: 18px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #fff, #ffe4eb);
+      box-shadow: 0 12px 32px rgba(255, 95, 130, 0.2);
+      font-size: 48px;
+      transform: rotate(-4deg);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 66px);
+      line-height: 1.02;
+      letter-spacing: -0.055em;
+    }
+
+    .subtitle {
+      margin: 18px auto 0;
+      max-width: 440px;
+      color: #7c5866;
+      font-size: clamp(15px, 2.5vw, 18px);
+      line-height: 1.6;
+    }
+
+    .button-area {
+      position: relative;
+      width: min(100%, 460px);
+      height: 150px;
+      margin: 34px auto 0;
+    }
+
+    button {
+      position: absolute;
+      top: 42px;
+      min-width: 132px;
+      height: 58px;
+      padding: 0 28px;
+      border: 0;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        background 160ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #yesBtn {
+      left: calc(50% - 148px);
+      color: white;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      box-shadow: 0 12px 28px rgba(233, 64, 104, 0.3);
+    }
+
+    #yesBtn:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 16px 34px rgba(233, 64, 104, 0.38);
+    }
+
+    #yesBtn:active {
+      transform: scale(0.98);
+    }
+
+    #noBtn {
+      left: calc(50% + 16px);
+      color: #76515f;
+      background: #fff;
+      border: 1px solid rgba(118, 81, 95, 0.14);
+      box-shadow: 0 8px 20px rgba(64, 38, 49, 0.1);
+      transition:
+        left 110ms ease-out,
+        top 110ms ease-out,
+        transform 110ms ease-out;
+    }
+
+    .hint {
+      margin-top: -8px;
+      color: #a27f8b;
+      font-size: 13px;
+    }
+
+    .result {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      place-items: center;
+      padding: 24px;
+      background: rgba(255, 242, 246, 0.86);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .result.show {
+      display: grid;
+      animation: fadeIn 320ms ease both;
+    }
+
+    .result-card {
+      width: min(92vw, 560px);
+      padding: 54px 30px;
+      border-radius: 32px;
+      background: white;
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: popIn 560ms cubic-bezier(.18, .89, .32, 1.28) both;
+    }
+
+    .result-card .big-heart {
+      font-size: 82px;
+      animation: heartbeat 900ms ease-in-out infinite;
+    }
+
+    .result-card h2 {
+      margin: 18px 0 10px;
+      font-size: clamp(38px, 8vw, 64px);
+      letter-spacing: -0.05em;
+    }
+
+    .result-card p {
+      margin: 0;
+      color: #7c5866;
+      font-size: 18px;
+    }
+
+    .restart {
+      position: static;
+      margin-top: 28px;
+      min-width: 150px;
+      color: white;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      box-shadow: 0 12px 28px rgba(233, 64, 104, 0.28);
+    }
+
+    .flying-heart {
+      position: absolute;
+      bottom: -80px;
+      font-size: 28px;
+      animation: flyUp linear forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.7) rotate(-4deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      35% { transform: scale(1.16); }
+      55% { transform: scale(1.04); }
+    }
+
+    @keyframes flyUp {
+      from {
+        transform: translateY(0) rotate(0deg) scale(0.7);
+        opacity: 0;
+      }
+      12% { opacity: 1; }
+      to {
+        transform: translateY(-120vh) rotate(540deg) scale(1.45);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .card {
+        min-height: 440px;
+        padding: 42px 20px 28px;
+        border-radius: 26px;
+      }
+
+      .button-area {
+        height: 180px;
+      }
+
+      button {
+        top: 35px;
+        min-width: 116px;
+        height: 56px;
+      }
+
+      #yesBtn {
+        left: calc(50% - 126px);
+      }
+
+      #noBtn {
+        left: calc(50% + 10px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-hearts" aria-hidden="true">
+    <span class="background-heart" style="left:8%;top:12%;font-size:52px;animation-delay:-1s;">♥</span>
+    <span class="background-heart" style="left:18%;top:76%;font-size:34px;animation-delay:-5s;">♥</span>
+    <span class="background-heart" style="left:78%;top:16%;font-size:42px;animation-delay:-3s;">♥</span>
+    <span class="background-heart" style="left:88%;top:70%;font-size:64px;animation-delay:-6s;">♥</span>
+    <span class="background-heart" style="left:55%;top:5%;font-size:24px;animation-delay:-2s;">♥</span>
+  </div>
+
+  <main class="card">
+    <div class="emoji" aria-hidden="true">💌</div>
+    <h1>Will you be mine?</h1>
+    <p class="subtitle">
+      There is only one correct answer.<br />
+      Choose carefully.
+    </p>
+
+    <div class="button-area" id="buttonArea">
+      <button id="yesBtn" type="button">Yes 💖</button>
+      <button id="noBtn" type="button" aria-label="No">No</button>
+    </div>
+
+    <p class="hint">Hint: “No” is a little shy.</p>
+  </main>
+
+  <section class="result" id="result" aria-live="polite">
+    <div class="celebration" id="celebration" aria-hidden="true"></div>
+    <div class="result-card">
+      <div class="big-heart" aria-hidden="true">💖</div>
+      <h2>Yay!</h2>
+      <p>I knew you would say yes.</p>
+      <button class="restart" id="restartBtn" type="button">Again</button>
+    </div>
+  </section>
+
+  <script>
+    const buttonArea = document.getElementById("buttonArea");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const result = document.getElementById("result");
+    const restartBtn = document.getElementById("restartBtn");
+    const celebration = document.getElementById("celebration");
+
+    let escapeCount = 0;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function moveNoButton(pointerX, pointerY) {
+      const areaRect = buttonArea.getBoundingClientRect();
+      const buttonRect = noBtn.getBoundingClientRect();
+
+      const maxX = Math.max(0, areaRect.width - buttonRect.width);
+      const maxY = Math.max(0, areaRect.height - buttonRect.height);
+
+      let x;
+      let y;
+
+      if (typeof pointerX === "number" && typeof pointerY === "number") {
+        const localX = pointerX - areaRect.left;
+        const localY = pointerY - areaRect.top;
+        const centerX = buttonRect.left - areaRect.left + buttonRect.width / 2;
+        const centerY = buttonRect.top - areaRect.top + buttonRect.height / 2;
+
+        const dx = centerX - localX;
+        const dy = centerY - localY;
+        const length = Math.hypot(dx, dy) || 1;
+
+        x = centerX + (dx / length) * 135 - buttonRect.width / 2;
+        y = centerY + (dy / length) * 95 - buttonRect.height / 2;
+      } else {
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
+      }
+
+      x += (Math.random() - 0.5) * 90;
+      y += (Math.random() - 0.5) * 60;
+
+      noBtn.style.left = `${clamp(x, 0, maxX)}px`;
+      noBtn.style.top = `${clamp(y, 0, maxY)}px`;
+      noBtn.style.transform = `rotate(${(Math.random() - 0.5) * 16}deg)`;
+
+      escapeCount += 1;
+      const labels = ["No", "Are you sure?", "Try again 😝", "Too slow!", "Nope!", "Catch me!"];
+      noBtn.textContent = labels[Math.min(escapeCount, labels.length - 1)];
+    }
+
+    function isPointerNearNoButton(clientX, clientY) {
+      const rect = noBtn.getBoundingClientRect();
+      const padding = 75;
+
+      return (
+        clientX >= rect.left - padding &&
+        clientX <= rect.right + padding &&
+        clientY >= rect.top - padding &&
+        clientY <= rect.bottom + padding
+      );
+    }
+
+    document.addEventListener("pointermove", (event) => {
+      if (event.pointerType === "mouse" && isPointerNearNoButton(event.clientX, event.clientY)) {
+        moveNoButton(event.clientX, event.clientY);
+      }
+    });
+
+    noBtn.addEventListener("pointerenter", (event) => {
+      moveNoButton(event.clientX, event.clientY);
+    });
+
+    noBtn.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      moveNoButton(event.clientX, event.clientY);
+    });
+
+    noBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      moveNoButton();
+    });
+
+    noBtn.addEventListener("focus", () => {
+      moveNoButton();
+      yesBtn.focus();
+    });
+
+    function launchHearts() {
+      celebration.innerHTML = "";
+
+      for (let i = 0; i < 38; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "flying-heart";
+        heart.textContent = Math.random() > 0.25 ? "💖" : "💕";
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDuration = `${3.2 + Math.random() * 3.4}s`;
+        heart.style.animationDelay = `${Math.random() * 1.6}s`;
+        heart.style.fontSize = `${18 + Math.random() * 34}px`;
+        celebration.appendChild(heart);
+      }
+    }
+
+    yesBtn.addEventListener("click", () => {
+      result.classList.add("show");
+      launchHearts();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      result.classList.remove("show");
+      celebration.innerHTML = "";
+      escapeCount = 0;
+      noBtn.textContent = "No";
+      noBtn.removeAttribute("style");
+    });
+
+    window.addEventListener("resize", () => {
+      noBtn.removeAttribute("style");
+    });
+  </script>
+</body>
+</html>
