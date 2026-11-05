@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ff6b8a" />
-  <title>Will You Be Mine?</title>
+  <meta name="description" content="A little question for Sandra, from someone who cares about her." />
+  <title>Sandra, will you be my girlfriend?</title>
   <style>
     :root {
       --pink: #ff5f82;
@@ -274,7 +275,9 @@
       }
 
       #noBtn {
-        left: calc(50% + 10px);
+        left: auto;
+        right: 0;
+        padding: 0 16px;
       }
     }
 
@@ -300,27 +303,27 @@
 
   <main class="card">
     <div class="emoji" aria-hidden="true">💌</div>
-    <h1>Will you be mine?</h1>
+    <h1>Sandra, will you be my girlfriend?</h1>
     <p class="subtitle">
-      There is only one correct answer.<br />
-      Choose carefully.
+      I really like you, and I’d love to make more memories together.<br />
+      What do you think?
     </p>
 
     <div class="button-area" id="buttonArea">
       <button id="yesBtn" type="button">Yes 💖</button>
-      <button id="noBtn" type="button" aria-label="No">No</button>
+      <button id="noBtn" type="button" aria-label="I need some time">I need some time</button>
     </div>
 
-    <p class="hint">Hint: “No” is a little shy.</p>
+    <p class="hint">No pressure — take all the time you need.</p>
   </main>
 
   <section class="result" id="result" aria-live="polite">
     <div class="celebration" id="celebration" aria-hidden="true"></div>
     <div class="result-card">
       <div class="big-heart" aria-hidden="true">💖</div>
-      <h2>Yay!</h2>
-      <p>I knew you would say yes. You are mine Jay</p>
-      <button class="restart" id="restartBtn" type="button">Again</button>
+      <h2 id="resultTitle">Yay!</h2>
+      <p id="resultMessage">I’m so happy, Sandra. Here’s to us 💖</p>
+      <button class="restart" id="restartBtn" type="button">Back</button>
     </div>
   </section>
 
@@ -332,86 +335,11 @@
     const restartBtn = document.getElementById("restartBtn");
     const celebration = document.getElementById("celebration");
 
-    let escapeCount = 0;
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
-
-    function moveNoButton(pointerX, pointerY) {
-      const areaRect = buttonArea.getBoundingClientRect();
-      const buttonRect = noBtn.getBoundingClientRect();
-
-      const maxX = Math.max(0, areaRect.width - buttonRect.width);
-      const maxY = Math.max(0, areaRect.height - buttonRect.height);
-
-      let x;
-      let y;
-
-      if (typeof pointerX === "number" && typeof pointerY === "number") {
-        const localX = pointerX - areaRect.left;
-        const localY = pointerY - areaRect.top;
-        const centerX = buttonRect.left - areaRect.left + buttonRect.width / 2;
-        const centerY = buttonRect.top - areaRect.top + buttonRect.height / 2;
-
-        const dx = centerX - localX;
-        const dy = centerY - localY;
-        const length = Math.hypot(dx, dy) || 1;
-
-        x = centerX + (dx / length) * 135 - buttonRect.width / 2;
-        y = centerY + (dy / length) * 95 - buttonRect.height / 2;
-      } else {
-        x = Math.random() * maxX;
-        y = Math.random() * maxY;
-      }
-
-      x += (Math.random() - 0.5) * 90;
-      y += (Math.random() - 0.5) * 60;
-
-      noBtn.style.left = `${clamp(x, 0, maxX)}px`;
-      noBtn.style.top = `${clamp(y, 0, maxY)}px`;
-      noBtn.style.transform = `rotate(${(Math.random() - 0.5) * 16}deg)`;
-
-      escapeCount += 1;
-      const labels = ["No", "Are you sure?", "Try again 😝", "Too slow!", "Nope!", "Catch me!"];
-      noBtn.textContent = labels[Math.min(escapeCount, labels.length - 1)];
-    }
-
-    function isPointerNearNoButton(clientX, clientY) {
-      const rect = noBtn.getBoundingClientRect();
-      const padding = 75;
-
-      return (
-        clientX >= rect.left - padding &&
-        clientX <= rect.right + padding &&
-        clientY >= rect.top - padding &&
-        clientY <= rect.bottom + padding
-      );
-    }
-
-    document.addEventListener("pointermove", (event) => {
-      if (event.pointerType === "mouse" && isPointerNearNoButton(event.clientX, event.clientY)) {
-        moveNoButton(event.clientX, event.clientY);
-      }
-    });
-
-    noBtn.addEventListener("pointerenter", (event) => {
-      moveNoButton(event.clientX, event.clientY);
-    });
-
-    noBtn.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      moveNoButton(event.clientX, event.clientY);
-    });
-
-    noBtn.addEventListener("click", (event) => {
-      event.preventDefault();
-      moveNoButton();
-    });
-
-    noBtn.addEventListener("focus", () => {
-      moveNoButton();
-      yesBtn.focus();
+    noBtn.addEventListener("click", () => {
+      document.getElementById("resultTitle").textContent = "Of course 💛";
+      document.getElementById("resultMessage").textContent = "Take all the time you need, Sandra. I’m glad I got to ask.";
+      result.classList.add("show");
+      celebration.innerHTML = "";
     });
 
     function launchHearts() {
@@ -430,6 +358,8 @@
     }
 
     yesBtn.addEventListener("click", () => {
+      document.getElementById("resultTitle").textContent = "Yay!";
+      document.getElementById("resultMessage").textContent = "I’m so happy, Sandra. Here’s to us 💖";
       result.classList.add("show");
       launchHearts();
     });
@@ -437,13 +367,8 @@
     restartBtn.addEventListener("click", () => {
       result.classList.remove("show");
       celebration.innerHTML = "";
-      escapeCount = 0;
-      noBtn.textContent = "No";
-      noBtn.removeAttribute("style");
-    });
-
-    window.addEventListener("resize", () => {
-      noBtn.removeAttribute("style");
+      document.getElementById("resultTitle").textContent = "Yay!";
+      document.getElementById("resultMessage").textContent = "I’m so happy, Sandra. Here’s to us 💖";
     });
   </script>
 </body>
